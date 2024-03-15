@@ -91,7 +91,8 @@ namespace ConwaysGameOfLife
             grid = newGrid;
         }
         #endregion
-        private int CountLiveNeighbors(int x, int y)
+        //public for testing 
+        public int CountLiveNeighbors(int x, int y)
         {
             int count = 0;
             // Iterate through the neighbors of the current cell
@@ -140,6 +141,11 @@ namespace ConwaysGameOfLife
         {
             base.OnClosed(e);
             running = false;
+        }
+
+        public bool[,] GetGrid()
+        {
+            return grid;
         }
     }
 }

@@ -1,6 +1,17 @@
 # ConwaysGameOfLife
 
-Im making this game to learn about Genetic Algorithms.
+Purpose:
+
+I'm making this game to learn about Genetic Algorithms. 
+
+Learnings:
+
+ - Game of Life Implementation: This project deepened my understanding of Conway's Game of Life. What I thought was a genetic algorithm turned out to be a simple cellular automaton. I learned how to simulate cell state transitions and manage generations within a grid, gaining insights into the underlying rules involving the game.
+
+ - Graphics Rendering in WinForms: I gained hands-on experience with graphics rendering in Windows Forms using GDI+. This involved tasks like drawing cells on a grid and updating the display to reflect changes in the game state, enhancing my proficiency in 2D rendering.
+
+ - Optimizing Rendering Performance: I explored techniques like double buffering and minimizing redraws to enhance rendering performance. These optimizations proved effective in mitigating flickering and improving the overall visual quality of the application.
+
 
 "The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970.
 

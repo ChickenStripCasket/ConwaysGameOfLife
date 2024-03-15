@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConwaysGameOfLife
 {
@@ -13,13 +12,14 @@ namespace ConwaysGameOfLife
         public int GridHeight;
 
         private bool[,] grid;
+        private bool[,] nextGeneration;
         private bool running;
         private Thread gameThread;
 
-        public GameOfLife(int GridSize)
+        public GameOfLife(int gridSize)
         {
             InitializeComponent();
-            InitializeGrid(GridSize);
+            InitializeGrid(gridSize);
             StartGame();
         }
 
@@ -30,6 +30,7 @@ namespace ConwaysGameOfLife
             GridHeight = size;
             running = true;
             grid = new bool[GridWidth, GridHeight];
+            nextGeneration = new bool[GridWidth, GridHeight];
             Random random = new Random();
             for (int x = 0; x < GridWidth; x++)
             {
@@ -51,14 +52,13 @@ namespace ConwaysGameOfLife
             while (running)
             {
                 UpdateGameState();
-                Thread.Sleep(100);
                 Invalidate();
+                Thread.Sleep(100);
             }
         }
-        #region BeansAndTaters
+
         private void UpdateGameState()
         {
-            bool[,] newGrid = new bool[GridWidth, GridHeight];
             for (int x = 0; x < GridWidth; x++)
             {
                 for (int y = 0; y < GridHeight; y++)
@@ -66,45 +66,32 @@ namespace ConwaysGameOfLife
                     int liveNeighbors = CountLiveNeighbors(x, y);
                     bool isAlive = grid[x, y];
 
-                    // Apply Conway's rules
-
-                    // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-                    // Any live cell with more than three live neighbors dies, as if by overpopulation.
                     if (isAlive && (liveNeighbors < 2 || liveNeighbors > 3))
                     {
-                        newGrid[x, y] = false;
+                        nextGeneration[x, y] = false;
                     }
-
-                    // Any live cell with two or three live neighbors lives on to the next generation.
-                    if (isAlive && (liveNeighbors == 2 || liveNeighbors == 3))
+                    else if (!isAlive && liveNeighbors == 3)
                     {
-                        newGrid[x, y] = true;
+                        nextGeneration[x, y] = true;
                     }
-
-                    // Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-                    if (!isAlive && liveNeighbors == 3)
+                    else
                     {
-                        newGrid[x, y] = true;
+                        nextGeneration[x, y] = isAlive;
                     }
                 }
             }
-            grid = newGrid;
+            Array.Copy(nextGeneration, grid, GridWidth * GridHeight);
         }
-        #endregion
-        //public for testing 
+
         public int CountLiveNeighbors(int x, int y)
         {
             int count = 0;
-            // Iterate through the neighbors of the current cell
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    // Calculate the coordinates of the neighbor cell
                     int neighborX = (x + i + GridWidth) % GridWidth;
                     int neighborY = (y + j + GridHeight) % GridHeight;
-
-                    // Count the live neighbors
                     if (grid[neighborX, neighborY] && !(i == 0 && j == 0))
                     {
                         count++;
@@ -117,23 +104,16 @@ namespace ConwaysGameOfLife
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            Graphics g = e.Graphics;
+            g.Clear(Color.White);
 
-            BufferedGraphicsContext context = BufferedGraphicsManager.Current;
-            using (BufferedGraphics bufferedGraphics = context.Allocate(e.Graphics, ClientRectangle))
+            for (int x = 0; x < GridWidth; x++)
             {
-                Graphics g = bufferedGraphics.Graphics;
-                g.Clear(Color.White);
-
-                for (int x = 0; x < GridWidth; x++)
+                for (int y = 0; y < GridHeight; y++)
                 {
-                    for (int y = 0; y < GridHeight; y++)
-                    {
-                        Brush brush = grid[x, y] ? Brushes.Black : Brushes.White;
-                        g.FillRectangle(brush, x * CellSize, y * CellSize, CellSize, CellSize);
-                    }
+                    Brush brush = grid[x, y] ? Brushes.Black : Brushes.White;
+                    g.FillRectangle(brush, x * CellSize, y * CellSize, CellSize, CellSize);
                 }
-
-                bufferedGraphics.Render();
             }
         }
 

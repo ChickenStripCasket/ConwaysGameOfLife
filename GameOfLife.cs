@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConwaysGameOfLife
 {
@@ -54,7 +55,7 @@ namespace ConwaysGameOfLife
                 Invalidate();
             }
         }
-
+        #region BeansAndTaters
         private void UpdateGameState()
         {
             bool[,] newGrid = new bool[GridWidth, GridHeight];
@@ -63,28 +64,46 @@ namespace ConwaysGameOfLife
                 for (int y = 0; y < GridHeight; y++)
                 {
                     int liveNeighbors = CountLiveNeighbors(x, y);
-                    if (grid[x, y])
+                    bool isAlive = grid[x, y];
+
+                    // Apply Conway's rules
+
+                    // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+                    // Any live cell with more than three live neighbors dies, as if by overpopulation.
+                    if (isAlive && (liveNeighbors < 2 || liveNeighbors > 3))
                     {
-                        newGrid[x, y] = liveNeighbors == 2 || liveNeighbors == 3;
+                        newGrid[x, y] = false;
                     }
-                    else
+
+                    // Any live cell with two or three live neighbors lives on to the next generation.
+                    if (isAlive && (liveNeighbors == 2 || liveNeighbors == 3))
                     {
-                        newGrid[x, y] = liveNeighbors == 3;
+                        newGrid[x, y] = true;
+                    }
+
+                    // Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+                    if (!isAlive && liveNeighbors == 3)
+                    {
+                        newGrid[x, y] = true;
                     }
                 }
             }
             grid = newGrid;
         }
-
+        #endregion
         private int CountLiveNeighbors(int x, int y)
         {
             int count = 0;
+            // Iterate through the neighbors of the current cell
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
+                    // Calculate the coordinates of the neighbor cell
                     int neighborX = (x + i + GridWidth) % GridWidth;
                     int neighborY = (y + j + GridHeight) % GridHeight;
+
+                    // Count the live neighbors
                     if (grid[neighborX, neighborY] && !(i == 0 && j == 0))
                     {
                         count++;

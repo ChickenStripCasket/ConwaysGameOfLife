@@ -15,6 +15,7 @@ namespace ConwaysGameOfLife
         private bool[,] nextGeneration;
         private bool running;
         private Thread gameThread;
+        private int generation = 0;
 
         public GameOfLife(int gridSize)
         {
@@ -59,6 +60,7 @@ namespace ConwaysGameOfLife
 
         private void UpdateGameState()
         {
+            generation++;
             for (int x = 0; x < GridWidth; x++)
             {
                 for (int y = 0; y < GridHeight; y++)
@@ -81,6 +83,7 @@ namespace ConwaysGameOfLife
                 }
             }
             Array.Copy(nextGeneration, grid, GridWidth * GridHeight);
+            UpdateWindowTitle();
         }
 
         public int CountLiveNeighbors(int x, int y)
@@ -121,6 +124,29 @@ namespace ConwaysGameOfLife
         {
             base.OnClosed(e);
             running = false;
+        }
+        private void UpdateWindowTitle()
+        {
+            try
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(delegate { this.Text = "Game of Life - Generation " + generation; }));
+                }
+                else
+                {
+                    this.Text = "Game of Life - Generation " + generation;
+                }
+
+            }
+            catch (System.ComponentModel.InvalidAsynchronousStateException ex)
+            {
+                // Game was Closed
+            }
+            catch (System.ObjectDisposedException ex)
+            {
+                // Game was Closed
+            }
         }
 
         public bool[,] GetGrid()

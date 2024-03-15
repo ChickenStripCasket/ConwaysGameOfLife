@@ -11,7 +11,7 @@ namespace ConwaysGameOfLife
 
             ApplicationConfiguration.Initialize();
 
-            GameOfLife game = new GameOfLife(100);
+            GameOfLife game = new GameOfLife(120);
             game.ClientSize = new Size(game.GridWidth * game.CellSize, game.GridHeight * game.CellSize);
             Application.Run(game);
         }

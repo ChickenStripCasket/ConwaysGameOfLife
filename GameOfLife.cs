@@ -111,7 +111,7 @@ namespace ConwaysGameOfLife
             {
                 for (int y = 0; y < GridHeight; y++)
                 {
-                    Brush brush = grid[x, y] ? Brushes.Black : Brushes.White;
+                    Brush brush = grid[x, y] ? Brushes.White : Brushes.Black;
                     g.FillRectangle(brush, x * CellSize, y * CellSize, CellSize, CellSize);
                 }
             }
